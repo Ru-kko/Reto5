@@ -16,3 +16,10 @@
 .homeCard, .contentTable{
     margin-top: 25px;
 }
+.edit {
+    display: none;
+}
+.tableRow:hover .edit{
+    display: table-row;
+    position: absolute;
+} 
