@@ -21,7 +21,7 @@ function buildUsersTable() {
                 $.get({
                     url: './componets/usersEditor.html',
                     success: (res) => {
-                        $('#usersTeble').css('display', 'none');
+                        $('#usersTable').css('display', 'none');
                         abileHeader = false;
                         $(document.body).append(res);
 
@@ -57,7 +57,7 @@ function buildUsersTable() {
                                 .always(() => {
                                     abileHeader = true;
                                     $('#inputContainer').remove();
-                                    $('#usersTeble').css('display', 'block');
+                                    $('#usersTable').css('display', 'block');
                                 });
                         });
                     }
@@ -77,7 +77,7 @@ function editUser() {
     $.get({
         url: './componets/usersEditor.html',
         success: (res) => {
-            $('#usersTeble').css('display', 'none');
+            $('#usersTable').css('display', 'none');
             abileHeader = false;
             $(document.body).append(res);
 
@@ -116,7 +116,7 @@ function editUser() {
                     .always(() => {
                         abileHeader = true;
                         $('#inputContainer').remove();
-                        $('#usersTeble').css('display', 'block');
+                        $('#usersTable').css('display', 'block');
                     });
             });
             $('#removeUser').click(() => {
@@ -135,7 +135,7 @@ function editUser() {
                     .always(() => {
                         abileHeader = true;
                         $('#inputContainer').remove();
-                        $('#usersTeble').css('display', 'block');
+                        $('#usersTable').css('display', 'block');
                     });
             })
         }
@@ -162,7 +162,7 @@ function buildFarmsTable() {
                 $.get({
                     url: './componets/farmsEditor.html',
                     success: (res) => {
-                        $('#farmsTeble').css('display', 'none');
+                        $('#farmsTable').css('display', 'none');
                         abileHeader = false;
                         $(document.body).append(res);
 
@@ -200,7 +200,7 @@ function buildFarmsTable() {
                                 .always(() => {
                                     abileHeader = true;
                                     $('#inputContainer').remove();
-                                    $('#farmsTeble').css('display', 'block');
+                                    $('#farmsTable').css('display', 'block');
                                 });
                         });
                     }
@@ -222,7 +222,7 @@ function editFarm() {
     $.get({
         url: './componets/farmsEditor.html',
         success: (res) => {
-            $('#farmsTeble').css('display', 'none');
+            $('#farmsTable').css('display', 'none');
             abileHeader = false;
             $(document.body).append(res);
 
@@ -262,11 +262,10 @@ function editFarm() {
                     .always(() => {
                         abileHeader = true;
                         $('#inputContainer').remove();
-                        $('#farmsTeble').css('display', 'block');
+                        $('#farmsTable').css('display', 'block');
                     });
             });
             $('#removeFram').click(() => {
-                console.log(parseInt(inputs[0].val()));
                 $.ajax({
                     url: farmsUrl,
                     type: 'DELETE',
@@ -282,7 +281,7 @@ function editFarm() {
                     .always(() => {
                         abileHeader = true;
                         $('#inputContainer').remove();
-                        $('#farmsTeble').css('display', 'block');
+                        $('#farmsTable').css('display', 'block');
                     });
             });
         }
@@ -292,7 +291,128 @@ function editFarm() {
 function buildMessagesTable() {
     $.ajax({
         type: 'GET',
-        url: farmsUrl,
-        success: (res) => {}
+        url: messagesUrl,
+        success: (res) => {
+            for (var i = 0; i < res.items.length; i++) {
+                const row = `<tr class="tableRow">` +
+                    `<th scope="row" class="id">${res.items[i].id}</th>` +
+                    `<th scope="row" class="message">${res.items[i].messagetext}</th>` +
+                    '<td class="edit"><a class="btn btn-secondary btn-sm btn-edit-message">edit</a></td></tr>';
+                $('#messagesRows').append(row);
+            }
+            $('td a.btn-edit-message').click(editMessage);
+            $('.btn-add-message').click(() => {
+                $.get({
+                    url: './componets/messagesEditor.html',
+                    success: (res) => {
+                        $('#messagesTable').css('display', 'none');
+                        abileHeader = false;
+                        $(document.body).append(res);
+
+                        $('#idInput').remove();
+                        $('#uploadMessage').remove();
+                        $('#removeMessage').remove();
+
+                        $('#addMessage').css('display', 'block');
+
+                        $('#addMessage').click(() => {
+                            var inputs = [
+                                $('#inputs div #textInput').val(),
+                            ];
+                            $.ajax({
+                                url: messagesUrl,
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    "messagetext": inputs[0],
+                                })
+                            })
+                                .done(() => {
+                                    $('.tableRow').remove();
+                                    buildMessagesTable();
+                                })
+                                .fail(() => {
+                                    alert('An unexpected error')
+                                })
+                                .always(() => {
+                                    abileHeader = true;
+                                    $('#inputContainer').remove();
+                                    $('#messagesTable').css('display', 'block');
+                                });
+                        });
+                    }
+                })
+            })
+        }
     });
+}
+function editMessage(){
+    const parent = $(this).parent().parent();
+    var options = [
+        parent.find('th.id'),
+        parent.find('th.message')
+    ];
+    $.get({
+        url: './componets/messagesEditor.html',
+        success: (res) => {
+            $('#messagesTable').css('display', 'none');
+            abileHeader = false;
+            
+            $(document.body).append(res);
+
+            var inputs = [
+                $('#inputs div #idInput'),
+                $('#inputs div #textInput')
+            ];
+
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].val(options[i].text());
+            };
+            $('#uploadMessage').click(() => {
+                var newInf = {
+                    "id": parseInt(inputs[0].val()),
+                    "messagetext": inputs[1].val()
+                };
+                console.log(newInf);
+                $.ajax({
+                    url: messagesUrl,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newInf)
+                })
+                    .done(() => {
+                        for (let i = 0; i < inputs.length; i++) {
+                            options[i].text(inputs[i].val());
+                        };
+                    })
+                    .fail(() => {
+                        alert('An unexpected error')
+                    })
+                    .always(() => {
+                        abileHeader = true;
+                        $('#inputContainer').remove();
+                        $('#messagesTable').css('display', 'block');
+                    });
+            });
+            $('#removeMessage').click(() => {
+                $.ajax({
+                    url: farmsUrl,
+                    type: 'DELETE',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "id": parseInt(inputs[0].val())})
+                })
+                    .done(() => {
+                        parent.remove();
+                    })
+                    .fail(() => {
+                        alert('An unexpected error');
+                    })
+                    .always(() => {
+                        abileHeader = true;
+                        $('#inputContainer').remove();
+                        $('#messagesTable').css('display', 'block');
+                    })
+            })
+        }
+    })
 }

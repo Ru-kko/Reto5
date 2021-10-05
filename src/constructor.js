@@ -5,8 +5,8 @@ let pageBuilders = new Map();
 
 $(document).ready(() => {
     pageBuilders.set('homePage', undefined);
-    pageBuilders.set('usersTeble', () => buildUsersTable());
-    pageBuilders.set('farmsTeble', () => buildFarmsTable());
+    pageBuilders.set('usersTable', () => buildUsersTable());
+    pageBuilders.set('farmsTable', () => buildFarmsTable());
     pageBuilders.set('messagesTable', () => buildMessagesTable());
 
     changePage('homePage');
