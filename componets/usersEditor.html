@@ -1,11 +1,15 @@
-<div id="overwrited">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-xl-3 col-sm-6 mb-5">
-                <div class="bg-white rounded shadow-sm py-5 px-4">
-                    <h5 class="mb-0">Insert Data</h5>
+<div class="position-fixed zindex-fixed" id="inputContainer">
+    <div class="container position-fixed top-50 start-50 translate-middle bg-transparent">
+        <div class="row justify-content-center bg-transparent">
+            <div class="col-xl-4 col-sm-8 mb-5 bg-transparent">
+                <div class="bg-white rounded shadow-sm py-5 px-4" id = 'inputs'>
+                    <h5 class="mb-2 text-center">Insert Data</h5>
+                    <div class="input-group mb-3" id="idInput">
+                        <span class="input-group-text">ID</span>
+                        <input type="number" class="form-control" id="idInput" disabled>
+                    </div>
                     <div class="input-group mb-3">
-                        <span class="input-group-text">name</span>
+                        <span class="input-group-text">Name</span>
                         <input type="text" class="form-control" id="nameInput">
                     </div>
                     <div class="input-group mb-3">
@@ -14,7 +18,11 @@
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text">Age</span>
-                        <input type="text" class="form-control" id="ageInput">
+                        <input type="number" class="form-control" id="ageInput">
+                    </div>
+                    <div class="d-flex justify-content-evenly bg-transparent" id='#userController'>
+                        <a href="#" class="btn btn-secondary" id="uploadUser">Submit</a>
+                        <a href="#" class="btn btn-secondary" id="removeUser">Delete</a>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 let actualPage = null;
+var abileHeader = true;
 let pageBuilders = new Map();
 
 
