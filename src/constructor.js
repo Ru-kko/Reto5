@@ -6,7 +6,8 @@ let pageBuilders = new Map();
 $(document).ready(() => {
     pageBuilders.set('homePage', undefined);
     pageBuilders.set('usersTeble', () => buildUsersTable());
-    // pageBuilders.set('farmsTeble', buildFarmsTable());
+    pageBuilders.set('farmsTeble', () => buildFarmsTable());
+    pageBuilders.set('messagesTable', () => buildMessagesTable());
 
     changePage('homePage');
     $.get({
@@ -17,6 +18,10 @@ $(document).ready(() => {
 
 function changePage(newPage) {
     if (newPage == actualPage) return;
+    if(!abileHeader){
+        alert('Please finish them');
+        return;
+    }
     $(`#${actualPage}`).remove();
     $.get({
         url: `./componets/${newPage}.html`,

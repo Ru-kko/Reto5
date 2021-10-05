@@ -1,4 +1,6 @@
 const clientUrl = 'https://g369d88cd72d64e-db202109232115.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/client/client';
+const farmsUrl = 'https://g369d88cd72d64e-db202109232115.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/farm/farm';
+const messagesUrl = 'https://g369d88cd72d64e-db202109232115.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/message/message';
 
 function buildUsersTable() {
     $.ajax({
@@ -11,10 +13,10 @@ function buildUsersTable() {
                     `<th class="name">${res.items[i].name}</th>` +
                     `<th class="email">${res.items[i].email}</th>` +
                     `<th class="age">${res.items[i].age}</th>` +
-                    '<td class="edit"><a class="btn btn-secondary btn-sm btn-edit">edit</a></td></tr>';
+                    '<td class="edit"><a class="btn btn-secondary btn-sm btn-edit-user">edit</a></td></tr>';
                 $('#userRows').append(row);
             }
-            $('td a.btn-edit').click(edit);
+            $('td a.btn-edit-user').click(editUser);
             $('.btn-add-user').click(() => {
                 $.get({
                     url: './componets/usersEditor.html',
@@ -27,16 +29,14 @@ function buildUsersTable() {
                         $('#uploadUser').remove();
                         $('#removeUser').remove();
 
-                        const newButtom = '<a href="#" class="btn btn-secondary" id="addUser">Add</a>'
-                        $('#userController').append(newButtom)
-                        
-                        var inputs = [
-                            $('#inputs div #ageInput').val(),
-                            $('#inputs div #nameInput').val(),
-                            $('#inputs div #emailInput').val()
-                        ];
+                        $('#addUser').css('display', 'block');
 
-                        $('#addUser').click(()=>{
+                        $('#addUser').click(() => {
+                            var inputs = [
+                                $('#inputs div #ageInput').val(),
+                                $('#inputs div #nameInput').val(),
+                                $('#inputs div #emailInput').val()
+                            ];
                             $.ajax({
                                 url: clientUrl,
                                 type: 'POST',
@@ -47,14 +47,15 @@ function buildUsersTable() {
                                     "age": inputs[0]
                                 })
                             })
-                                .done(()=>{
+                                .done(() => {
                                     $('.tableRow').remove();
                                     buildUsersTable();
                                 })
                                 .fail(() => {
                                     alert('An unexpected error')
                                 })
-                                .always(()=>{
+                                .always(() => {
+                                    abileHeader = true;
                                     $('#inputContainer').remove();
                                     $('#usersTeble').css('display', 'block');
                                 });
@@ -65,8 +66,7 @@ function buildUsersTable() {
         }
     })
 }
-
-function edit() {
+function editUser() {
     const parent = $(this).parent().parent();
     var options = [
         parent.find('th.id'),
@@ -114,6 +114,7 @@ function edit() {
                         alert('An unexpected error')
                     })
                     .always(() => {
+                        abileHeader = true;
                         $('#inputContainer').remove();
                         $('#usersTeble').css('display', 'block');
                     });
@@ -132,10 +133,166 @@ function edit() {
                         alert('An unexpected error')
                     })
                     .always(() => {
+                        abileHeader = true;
                         $('#inputContainer').remove();
                         $('#usersTeble').css('display', 'block');
                     });
             })
         }
     })
+}
+
+function buildFarmsTable() {
+    $.ajax({
+        type: 'GET',
+        url: farmsUrl,
+        success: (res) => {
+            for (var i = 0; i < res.items.length; i++) {
+                const row = `<tr class="tableRow">` +
+                    `<th scope="row" class="id">${res.items[i].id}</th>` +
+                    `<th scope="row" class="name">${res.items[i].name}</th>` +
+                    `<th scope="row" class="address">${res.items[i].address}</th>` +
+                    `<th scope="row" class="exension">${res.items[i].exension}</th>` +
+                    `<th scope="row" class="category">${res.items[i].category_id}</th>` +
+                    '<td class="edit"><a class="btn btn-secondary btn-sm btn-edit-farm">edit</a></td></tr>';
+                $('#farmsRows').append(row);
+            }
+            $('td a.btn-edit-farm').click(editFarm);
+            $('.btn-add-farm').click(() => {
+                $.get({
+                    url: './componets/farmsEditor.html',
+                    success: (res) => {
+                        $('#farmsTeble').css('display', 'none');
+                        abileHeader = false;
+                        $(document.body).append(res);
+
+                        $('#idInput').remove();
+                        $('#uploadFram').remove();
+                        $('#removeFram').remove();
+
+                        $('#addFarm').css('display', 'block');
+
+                        $('#addFarm').click(() => {
+                            var inputs = [
+                                $('#inputs div #nameInput').val(),
+                                $('#inputs div #addressInput').val(),
+                                $('#inputs div #exensionInput').val(),
+                                $('#inputs div #categoryInput').val()
+                            ];
+                            $.ajax({
+                                url: farmsUrl,
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    "name": inputs[0],
+                                    "address": inputs[1],
+                                    "exension": parseInt(inputs[2]),
+                                    "category_id": parseInt(inputs[3])
+                                })
+                            })
+                                .done(() => {
+                                    $('.tableRow').remove();
+                                    buildFarmsTable();
+                                })
+                                .fail(() => {
+                                    alert('An unexpected error')
+                                })
+                                .always(() => {
+                                    abileHeader = true;
+                                    $('#inputContainer').remove();
+                                    $('#farmsTeble').css('display', 'block');
+                                });
+                        });
+                    }
+                })
+            })
+        }
+    });
+}
+
+function editFarm() {
+    const parent = $(this).parent().parent();
+    var options = [
+        parent.find('th.id'),
+        parent.find('th.name'),
+        parent.find('th.address'),
+        parent.find('th.exension'),
+        parent.find('th.category')
+    ];
+    $.get({
+        url: './componets/farmsEditor.html',
+        success: (res) => {
+            $('#farmsTeble').css('display', 'none');
+            abileHeader = false;
+            $(document.body).append(res);
+
+            var inputs = [
+                $('#inputs div #idInput'),
+                $('#inputs div #nameInput'),
+                $('#inputs div #addressInput'),
+                $('#inputs div #exensionInput'),
+                $('#inputs div #categoryInput')
+            ];
+
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].val(options[i].text());
+            };
+            $('#uploadFram').click(() => {
+                var newInf = {
+                    "id": parseInt(inputs[0].val()),
+                    "name": inputs[1].val(),
+                    "address": inputs[2].val(),
+                    "exension": parseInt(inputs[3].val()),
+                    "category_id": parseInt(inputs[4].val())
+                };
+                $.ajax({
+                    url: farmsUrl,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newInf)
+                })
+                    .done(() => {
+                        for (let i = 0; i < inputs.length; i++) {
+                            options[i].text(inputs[i].val());
+                        };
+                    })
+                    .fail(() => {
+                        alert('An unexpected error')
+                    })
+                    .always(() => {
+                        abileHeader = true;
+                        $('#inputContainer').remove();
+                        $('#farmsTeble').css('display', 'block');
+                    });
+            });
+            $('#removeFram').click(() => {
+                console.log(parseInt(inputs[0].val()));
+                $.ajax({
+                    url: farmsUrl,
+                    type: 'DELETE',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "id": parseInt(inputs[0].val()) })
+                })
+                    .done(() => {
+                        parent.remove();
+                    })
+                    .fail(() => {
+                        alert('An unexpected error')
+                    })
+                    .always(() => {
+                        abileHeader = true;
+                        $('#inputContainer').remove();
+                        $('#farmsTeble').css('display', 'block');
+                    });
+            });
+        }
+    })
+}
+
+function buildMessagesTable() {
+    $.ajax({
+        type: 'GET',
+        url: farmsUrl,
+        success: (res) => {}
+    });
 }
